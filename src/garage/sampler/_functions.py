@@ -1,6 +1,7 @@
 """Functions used by multiple Samplers or Workers."""
 from garage import Environment
 from garage.sampler.env_update import EnvUpdate
+from robosuite.garage.robosuite_env_update import EnvUpdate as EnvUpdateRS
 
 
 def _apply_env_update(old_env, env_update):
@@ -30,11 +31,14 @@ def _apply_env_update(old_env, env_update):
     if env_update is not None:
         if isinstance(env_update, EnvUpdate):
             return env_update(old_env), True
+        if isinstance(env_update, EnvUpdateRS):
+            return env_update(old_env), True
         elif isinstance(env_update, Environment):
             if old_env is not None:
                 old_env.close()
             return env_update, True
         else:
+
             raise TypeError('Unknown environment update type.')
     else:
         return old_env, False

@@ -83,7 +83,7 @@ class SetTaskUpdate(EnvUpdate):
         self._task = task
         self._wrapper_cons = wrapper_constructor
 
-    def _make_env(self):
+    def _make_env(self) -> object:
         """Construct the environment, wrapping if necessary.
 
         Returns:

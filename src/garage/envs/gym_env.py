@@ -272,19 +272,27 @@ class GymEnv(Environment):
                        env_info=info,
                        step_type=step_type)
 
-    def render(self, mode):
+    def render(self, mode=None):
         """Renders the environment.
 
         Args:
-            mode (str): the mode to render with. The string must be present in
-                `self.render_modes`.
+            mode (str or None): the mode to render with. The string must be
+            present in `self_render_modes`. In the specific case of Robosuite,
+            this argument just lists the available render options. To change
+            the Robosuite environment render mode, the arguments in
+            robosuite.make(has_renderer,has_offscreen_renderer,renderer,etc.)
+            have to be set accordingly. See class MujocoEnv (line 55) in
+            robosuite/environments/base.py for a detailed description.
+
 
         Returns:
             object: the return value for render, depending on each env.
 
         """
         self._validate_render_mode(mode)
-        return self._env.render(mode)
+        return self._env.render()   # changed return self._env.render(mode)
+                                    # to match the structure of gym_wrapper.py
+                                    # from Robosuite
 
     def visualize(self):
         """Creates a visualization of the environment."""
