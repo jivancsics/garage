@@ -46,7 +46,8 @@ class MetaEvaluator:
                  prefix='MetaTest',
                  test_task_names=None,
                  worker_class=DefaultWorker,
-                 worker_args=None):
+                 worker_args=None,
+                 is_robosuite_ml=False):
         self._test_task_sampler = test_task_sampler
         self._worker_class = worker_class
         if worker_args is None:
@@ -63,6 +64,7 @@ class MetaEvaluator:
         self._test_task_names = test_task_names
         self._test_sampler = None
         self._max_episode_length = None
+        self.is_robosuite_ml = is_robosuite_ml
 
     def evaluate(self, algo, test_episodes_per_task=None):
         """Evaluate the Meta-RL algorithm on the test tasks.
@@ -78,16 +80,27 @@ class MetaEvaluator:
         logger.log('Sampling for adapation and meta-testing...')
         env_updates = self._test_task_sampler.sample(self._n_test_tasks)
         if self._test_sampler is None:
-            env = env_updates[0]()
-            self._max_episode_length = env.spec.max_episode_length
-            self._test_sampler = LocalSampler.from_worker_factory(
-                WorkerFactory(seed=get_seed(),
-                              max_episode_length=self._max_episode_length,
-                              n_workers=1,
-                              worker_class=self._worker_class,
-                              worker_args=self._worker_args),
-                agents=algo.get_exploration_policy(),
-                envs=env)
+            env = env_updates[0]
+            env_exec = env_updates[0]()
+            self._max_episode_length = env_exec.spec.max_episode_length
+            if self.is_robosuite_ml:
+                self._test_sampler = LocalSampler.from_worker_factory(
+                    WorkerFactory(seed=get_seed(),
+                                  max_episode_length=self._max_episode_length,
+                                  n_workers=1,
+                                  worker_class=self._worker_class,
+                                  worker_args=self._worker_args),
+                    agents=algo.get_exploration_policy(),
+                    envs=env)
+            else:
+                self._test_sampler = LocalSampler.from_worker_factory(
+                    WorkerFactory(seed=get_seed(),
+                                  max_episode_length=self._max_episode_length,
+                                  n_workers=1,
+                                  worker_class=self._worker_class,
+                                  worker_args=self._worker_args),
+                    agents=algo.get_exploration_policy(),
+                    envs=env_exec)
         for env_up in env_updates:
             policy = algo.get_exploration_policy()
             eps = EpisodeBatch.concatenate(*[
