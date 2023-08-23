@@ -269,18 +269,42 @@ class Trainer:
 
         logger.log('Saving snapshot...')
 
-        params = dict()
-        # Save arguments
-        params['seed'] = self._seed
-        params['train_args'] = self._train_args
-        params['stats'] = self._stats
+        # Currently got problems when saving Robosuite environments with PyTorch experiments
 
-        # Save states
-        params['env'] = self._env
-        params['algo'] = self._algo
-        params['n_workers'] = self._n_workers
-        params['worker_class'] = self._worker_class
-        params['worker_args'] = self._worker_args
+        # Error:
+        # File "mujoco_py/mjbatchrenderer.pyx", line 2, in mujoco_py.cymj
+        # TypeError: no default __reduce__ due to non-trivial __cinit__
+
+        # Solution in the meantime:
+        # Differentiate between Tensorflow- and PyTorch-based experiments here
+        # In case of PyTorch-based experiments, exclude env and algo snapshot and just store the agent itself
+
+        if isinstance(self, TFTrainer):
+            params = dict()
+            # Save arguments
+            params['seed'] = self._seed
+            params['train_args'] = self._train_args
+            params['stats'] = self._stats
+
+            # Save states
+            params['env'] = self._env
+            params['algo'] = self._algo
+            params['n_workers'] = self._n_workers
+            params['worker_class'] = self._worker_class
+            params['worker_args'] = self._worker_args
+
+        else:
+            params = dict()
+            # Save arguments
+            params['seed'] = self._seed
+            params['train_args'] = self._train_args
+            params['stats'] = self._stats
+
+            # Save states
+            params['algo'] = self._algo.policy
+            params['n_workers'] = self._n_workers
+            params['worker_class'] = self._worker_class
+            params['worker_args'] = self._worker_args
 
         self._snapshotter.save_itr_params(epoch, params)
 
