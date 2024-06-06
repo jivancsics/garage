@@ -4,6 +4,12 @@
 [![codecov](https://codecov.io/gh/rlworkgroup/garage/branch/master/graph/badge.svg)](https://codecov.io/gh/rlworkgroup/garage)
 [![PyPI version](https://badge.fury.io/py/garage.svg)](https://badge.fury.io/py/garage)
 
+# This version of Garage has been slightly adapted for the usage with CRiSE 1-3-7
+
+Meta-Reinforcement Learning is the focus in this work. See the repository of [CRiSE 1-3-7](https://github.com/jivancsics/robosuite_CRiSE137/tree/master) for more details.
+
+The following documentation is similar to the original documentation of Garage. 
+
 # garage
 
 garage is a toolkit for developing and evaluating reinforcement learning
