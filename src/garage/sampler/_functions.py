@@ -1,7 +1,7 @@
 """Functions used by multiple Samplers or Workers."""
 from garage import Environment
 from garage.sampler.env_update import EnvUpdate
-from robosuite.garage.robosuite_env_update import EnvUpdate as EnvUpdateRS
+from robosuite.CRiSE137.robosuite_env_update import EnvUpdate as EnvUpdateRS
 
 
 def _apply_env_update(old_env, env_update):
